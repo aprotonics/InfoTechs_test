@@ -15,5 +15,5 @@ pip install -r requirements.txt
 ```
 
 ```
-pytest
+pytest test_oath_com.py
 ```
