@@ -5,6 +5,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 
+from pages.main_page import MainPage
+from pages.registration_page import RegistrationPage
+from pages.login_page import LoginPage
+from pages.auth_with_code_page import AuthWithCodePage
+from pages.auth_with_code_and_pkce_page import AuthWithCodeAndPkcePage
+
+from pages.locators import *
+
 
 BASE_URL = 'https://www.oauth.com'
 URL = 'https://www.oauth.com/playground/index.html'
@@ -14,208 +22,256 @@ URL = 'https://www.oauth.com/playground/index.html'
 def registration(driver):
     URL = f'{BASE_URL}/playground/client-registration.html'
 
-    driver.get(URL)
+    registration_page = RegistrationPage(driver, URL)
+    registration_page.open()
+    registration_page.register()
 
-    register_button = driver.find_element(By.CSS_SELECTOR, 'a.register-new')
-    register_button.click()
+    # driver.get(URL)
 
-    success_title = WebDriverWait(driver, 10).until(
-        EC.visibility_of_element_located((By.XPATH, '//*[@id="client-registration-modal"]//div[contains(@class, "success")]/h3[contains(text(),"Great")]'))
-    )
+    # register_button = driver.find_element(*register_button_selector)
+    # register_button.click()
 
-    success_title_value = success_title.text
+    # success_title = WebDriverWait(driver, 10).until(
+    #     EC.visibility_of_element_located(*success_title_selector)
+    # )
 
-    client_id = driver.find_element(By.CSS_SELECTOR, '#client-registration-modal table .client-id').text
-    client_secret = driver.find_element(By.CSS_SELECTOR, '#client-registration-modal table .client-secret').text
-    user_login = driver.find_element(By.CSS_SELECTOR, '#client-registration-modal table .user-login').text
-    user_password = driver.find_element(By.CSS_SELECTOR, '#client-registration-modal table .user-password').text
-    credentials = {
-        'client_id': client_id,
-        'client_secret': client_secret,
-        'user_login': user_login,
-        'user_password': user_password}
+    # success_title_value = success_title.text
 
-    registration = [driver, credentials, success_title_value]
+    # client_id = driver.find_element(*client_id_selector).text
+    # client_secret = driver.find_element(*client_secret_selector).text
+    # user_login = driver.find_element(*user_login_selector).text
+    # user_password = driver.find_element(*user_password_selector).text
+    # credentials = {
+    #     'client_id': client_id,
+    #     'client_secret': client_secret,
+    #     'user_login': user_login,
+    #     'user_password': user_password}
 
-    return registration
+    # registration = [driver, credentials, success_title_value]
+
+    return registration_page
 
 
-class Test():
-    def test_transition_to_reg_page(self, driver):
+class TestOathCom():  
+    def test_go_to_reg_page(self, driver):        
         URL = f'{BASE_URL}/playground/index.html'
 
-        self.driver = driver
+        main_page = MainPage(driver, URL)
+        main_page.open()
+        main_page.go_to_reg_page()
+        registration_page = RegistrationPage(driver, URL)
+        registration_page.check_url()
 
-        self.driver.get(URL)
+        # self.driver = driver
 
-        link = self.driver.find_element(By.CSS_SELECTOR, 'p.no-client > a')
-        link.click()
+        # self.driver.get(URL)    
 
-        current_url = self.driver.current_url
+        # link = self.driver.find_element(*link_selector)
+        # link.click()
 
-        assert 'client-registration' in current_url, f'"client-registration" not in {current_url}'
+        # current_url = self.driver.current_url
+
+        # assert 'client-registration' in current_url, f'"client-registration" not in {current_url}'
+        pass
 
     def test_registration(self, registration):
         URL = f'{BASE_URL}/playground/client-registration.html'
 
-        self.driver, _, success_title_value = registration
+        # self.driver, _, success_title_value = registration
 
-        assert 'Great' in success_title_value, f'Great not in {success_title_value}'
+        registration_page = registration
+        registration_page.check_registration()
+        
+        # assert 'Great' in success_title_value, f'Great not in {success_title_value}'
+        
+        # self.driver.get(URL)
 
-        self.driver.get(URL)
+        # div_register = self.driver.find_element(*div_register_selector)
+        # div_register_class_name = div_register.get_attribute('class')
+        # div_register_is_hidden = 'hidden' in div_register_class_name
 
-        div_register = self.driver.find_element(By.CSS_SELECTOR, 'div.hide-when-registered')
-        div_register_class_name = div_register.get_attribute('class')
-        div_register_is_hidden = 'hidden' in div_register_class_name
+        # div_already_registered = self.driver.find_element(*div_already_registered_selector)
+        # div_already_registered_class_name = div_already_registered.get_attribute('class')
+        # div_already_registered_is_hidden = 'hidden' in div_already_registered_class_name
 
-        div_already_registered = self.driver.find_element(By.CSS_SELECTOR, 'div.already-registered')
-        div_already_registered_class_name = div_already_registered.get_attribute('class')
-        div_already_registered_is_hidden = 'hidden' in div_already_registered_class_name
-
-        assert div_register_is_hidden, f'div_register is not hidden'
-        assert not div_already_registered_is_hidden, f'div_already_registered is hidden'
+        # assert div_register_is_hidden, f'div_register is not hidden'
+        # assert not div_already_registered_is_hidden, f'div_already_registered is hidden'
+        pass
 
     def test_reset_registration(self, registration):
         URL = f'{BASE_URL}/playground/client-registration.html'
 
-        self.driver, *_ = registration
+        # self.driver, *_ = registration
 
-        self.driver.get(URL)
+        registration_page = registration
+        registration_page.reset_registration()
+        registration_page.check_reset_registration()
 
-        # Reset registration
-        view_register_button = self.driver.find_element(By.CSS_SELECTOR, 'a.view-registration')
-        view_register_button.click()
+        # self.driver.get(URL)
 
-        reset_session_button = self.driver.find_element(By.CSS_SELECTOR, '#client-registration-modal a.reset-session')
-        reset_session_button.click()
+        # # Reset registration
+        # view_register_button = self.driver.find_element(*view_register_button_selector)
+        # view_register_button.click()
 
-        # Check reset
-        div_register = self.driver.find_element(By.CSS_SELECTOR, 'div.hide-when-registered')
-        div_register_class_name = div_register.get_attribute('class')
-        div_register_is_hidden = 'hidden' in div_register_class_name
+        # reset_session_button = self.driver.find_element(*reset_session_button_selector)
+        # reset_session_button.click()
 
-        div_already_registered = self.driver.find_element(By.CSS_SELECTOR, 'div.already-registered')
-        div_already_registered_class_name = div_already_registered.get_attribute('class')
-        div_already_registered_is_hidden = 'hidden' in div_already_registered_class_name
+        # # Check reset
+        # div_register = self.driver.find_element(*div_register_selector)
+        # div_register_class_name = div_register.get_attribute('class')
+        # div_register_is_hidden = 'hidden' in div_register_class_name
 
-        assert not div_register_is_hidden, f'div_register is hidden'
-        assert div_already_registered_is_hidden, f'div_already_registered is not hidden'
+        # div_already_registered = self.driver.find_element(*div_already_registered_selector)
+        # div_already_registered_class_name = div_already_registered.get_attribute('class')
+        # div_already_registered_is_hidden = 'hidden' in div_already_registered_class_name
+
+        # assert not div_register_is_hidden, f'div_register is hidden'
+        # assert div_already_registered_is_hidden, f'div_already_registered is not hidden'
+        pass
 
     def test_auth_with_auth_code(self, registration):
         URL = f'{BASE_URL}/playground/authorization-code.html'
 
-        self.driver, credentials, *_ = registration
+        # self.driver, credentials, *_ = registration
 
-        self.driver.get(URL)
+        registration_page = registration
+        auth_with_code_page = AuthWithCodePage()
+        auth_with_code_page.open()
+        auth_with_code_page.build_auth_url()
+        login_page = LoginPage()
+        login_page.open()
+        login_page.login()
+        login_page.approve_access()
+        auth_with_code_page.verify_state_parameter()
+        auth_with_code_page.exchange_auth_code()
+        auth_with_code_page.check_access_token_appeared()
 
-        # Build the Authorization URL
-        state_parameter = self.driver.find_element(By.CSS_SELECTOR, '.auth-url-string .oauth2-state').text
-        auth_button = self.driver.find_element(By.CSS_SELECTOR, 'a.auth-url')
-        auth_button.click()
 
-        # Log In
-        username_input = self.driver.find_element(By.CSS_SELECTOR, 'input#username')
-        username_input.send_keys(credentials['user_login'])
-        password_input = self.driver.find_element(By.CSS_SELECTOR, 'input#password')
-        password_input.send_keys(credentials['user_password'])
-        submit_button = self.driver.find_element(By.CSS_SELECTOR, 'a#log-in-button')
-        submit_button.click()
+        # self.driver.get(URL)
 
-        approve_button = self.driver.find_element(By.CSS_SELECTOR, 'a#redirect-uri')
-        approve_button.click()
+        # # Build the Authorization URL
+        # state_parameter = self.driver.find_element(*state_parameter_selector).text
+        # auth_button = self.driver.find_element(*auth_button_selector)
+        # auth_button.click()
 
-        # Verify the state parameter
-        current_url = self.driver.current_url
-        state_parameter_in_url = current_url.split('?')[1].split('&')[0].split('=')[1]
+        # # Log In
+        # username_input = self.driver.find_element(*username_input_selector)
+        # username_input.send_keys(credentials['user_login'])
+        # password_input = self.driver.find_element(*password_input_selector)
+        # password_input.send_keys(credentials['user_password'])
+        # submit_button = self.driver.find_element(*submit_button_selector)
+        # submit_button.click()
 
-        assert state_parameter_in_url == state_parameter, f'{state_parameter_in_url} !== {state_parameter}'
+        # approve_button = self.driver.find_element(*approve_button_selector)
+        # approve_button.click()
 
-        continue_button = self.driver.find_element(By.CSS_SELECTOR, '.card-footer a[data-step="2"]')
-        continue_button.click()
+        # # Verify the state parameter
+        # current_url = self.driver.current_url
+        # state_parameter_in_url = current_url.split('?')[1].split('&')[0].split('=')[1]
 
-        time.sleep(1.5)
+        # assert state_parameter_in_url == state_parameter, f'{state_parameter_in_url} !== {state_parameter}'
 
-        # Exchange the Authorization Code
-        go_button = self.driver.find_element(By.CSS_SELECTOR, '.card-footer a[data-step="3"]')
-        actions = ActionChains(self.driver)
-        actions.move_to_element(go_button).click(go_button).perform()
+        # continue_button = self.driver.find_element(*continue_button_selector)
+        # continue_button.click()
 
-        success_message = WebDriverWait(self.driver, 10).until(
-            EC.visibility_of_element_located((By.XPATH, '//p[contains(@class, "success-message")][contains(text(),"Great")]'))
-        )
+        # time.sleep(1.5)
 
-        token_response = self.driver.find_element(By.CSS_SELECTOR, '.token-response').text
-        access_token = token_response.split('\n')[3].split('"')[3]
+        # # Exchange the Authorization Code
+        # go_button = self.driver.find_element(*go_button_selector)
+        # actions = ActionChains(self.driver)
+        # actions.move_to_element(go_button).click(go_button).perform()
 
-        print(access_token)
+        # success_message = WebDriverWait(self.driver, 10).until(
+        #     EC.visibility_of_element_located(*success_message_selector)
+        # )
 
-        assert 'access_token' in token_response, f'"access_token" not in {token_response}'
-        assert len(access_token) > 0, f'len of {access_token} = 0'
+        # token_response = self.driver.find_element(*token_response_selector).text
+        # access_token = token_response.split('\n')[3].split('"')[3]
+
+        # print(access_token)
+
+        # assert 'access_token' in token_response, f'"access_token" not in {token_response}'
+        # assert len(access_token) > 0, f'len of {access_token} = 0'
+        pass
 
     def test_auth_with_auth_code_and_pkce(self, registration):
         URL = f'{BASE_URL}/playground/authorization-code-with-pkce.html'
 
-        self.driver, credentials, *_ = registration
+        # self.driver, credentials, *_ = registration
 
-        self.driver.get(URL)
+        registration_page = registration
+        auth_with_code_and_pkce_page = AuthWithCodeAndPkcePage()
+        auth_with_code_and_pkce_page.open()
+        auth_with_code_and_pkce_page.create_code_verifier_and_challenge()
+        auth_with_code_and_pkce_page.build_auth_url()
+        login_page = LoginPage()
+        login_page.open()
+        login_page.login()
+        login_page.approve_access()
+        auth_with_code_and_pkce_page.verify_state_parameter()
+        auth_with_code_and_pkce_page.exchange_auth_code()
+        auth_with_code_and_pkce_page.check_access_token_appeared()
 
-        # Create a Code Verifier and Challenge
-        generate_code_verifier_button = self.driver.find_element(By.CSS_SELECTOR, 'a.generate-code-verifier')
-        generate_code_verifier_button.click()
-        code_verifier = self.driver.find_element(By.CSS_SELECTOR, '.code-verifier').text
+        # self.driver.get(URL)
 
-        generate_code_challenge_button = self.driver.find_element(By.CSS_SELECTOR, 'a.generate-code-challenge')
-        generate_code_challenge_button.click()
-        code_challenge = self.driver.find_element(By.CSS_SELECTOR, '.code-challenge').text
+        # # Create a Code Verifier and Challenge
+        # generate_code_verifier_button = self.driver.find_element(*generate_code_verifier_button_selector)
+        # generate_code_verifier_button.click()
+        # code_verifier = self.driver.find_element(*code_verifier_selector).text
 
-        continue_button = self.driver.find_element(By.CSS_SELECTOR, '.card-footer a[data-step="1"]')
-        continue_button.click()
+        # generate_code_challenge_button = self.driver.find_element(*generate_code_challenge_button_selector)
+        # generate_code_challenge_button.click()
+        # code_challenge = self.driver.find_element(*code_challenge_selector).text
 
-        time.sleep(1.5)
+        # continue_button = self.driver.find_element(*continue_button_selector)
+        # continue_button.click()
 
-        # Build the Authorization URL
-        state_parameter = self.driver.find_element(By.CSS_SELECTOR, '.auth-url-string .oauth2-state').text
-        auth_button = self.driver.find_element(By.CSS_SELECTOR, 'a.auth-url')
-        actions = ActionChains(self.driver)
-        actions.move_to_element(auth_button).click(auth_button).perform()
+        # time.sleep(1.5)
 
-        # Log In
-        username_input = self.driver.find_element(By.CSS_SELECTOR, 'input#username')
-        username_input.send_keys(credentials['user_login'])
-        password_input = self.driver.find_element(By.CSS_SELECTOR, 'input#password')
-        password_input.send_keys(credentials['user_password'])
-        submit_button = self.driver.find_element(By.CSS_SELECTOR, 'a#log-in-button')
-        submit_button.click()
+        # # Build the Authorization URL
+        # state_parameter = self.driver.find_element(*state_parameter_selector).text
+        # auth_button = self.driver.find_element(*auth_button_selector)
+        # actions = ActionChains(self.driver)
+        # actions.move_to_element(auth_button).click(auth_button).perform()
 
-        approve_button = self.driver.find_element(By.CSS_SELECTOR, 'a#redirect-uri')
-        approve_button.click()
+        # # Log In
+        # username_input = self.driver.find_element(*username_input_selector)
+        # username_input.send_keys(credentials['user_login'])
+        # password_input = self.driver.find_element(*password_input_selector)
+        # password_input.send_keys(credentials['user_password'])
+        # submit_button = self.driver.find_element(*submit_button_selector)
+        # submit_button.click()
 
-        time.sleep(0.5)
+        # approve_button = self.driver.find_element(*approve_button_selector)
+        # approve_button.click()
 
-        # Verify the state parameter
-        current_url = self.driver.current_url
-        state_parameter_in_url = current_url.split('?')[1].split('&')[0].split('=')[1]
+        # time.sleep(0.5)
 
-        assert state_parameter_in_url == state_parameter, f'{state_parameter_in_url} !== {state_parameter}'
+        # # Verify the state parameter
+        # current_url = self.driver.current_url
+        # state_parameter_in_url = current_url.split('?')[1].split('&')[0].split('=')[1]
 
-        continue_button = self.driver.find_element(By.CSS_SELECTOR, '.card-footer a[data-step="3"]')
-        continue_button.click()
+        # assert state_parameter_in_url == state_parameter, f'{state_parameter_in_url} !== {state_parameter}'
+
+        # continue_button = self.driver.find_element(*continue_button_selector)
+        # continue_button.click()
         
-        time.sleep(1.5)
+        # time.sleep(1.5)
 
-        # Exchange the Authorization Code
-        go_button = self.driver.find_element(By.CSS_SELECTOR, '.card-footer a[data-step="4"]')
-        actions = ActionChains(self.driver)
-        actions.move_to_element(go_button).click(go_button).perform()
+        # # Exchange the Authorization Code
+        # go_button = self.driver.find_element(*go_button_selector)
+        # actions = ActionChains(self.driver)
+        # actions.move_to_element(go_button).click(go_button).perform()
 
-        success_message = WebDriverWait(self.driver, 10).until(
-            EC.visibility_of_element_located((By.XPATH, '//p[contains(@class, "success-message")][contains(text(),"Great")]'))
-        )
+        # success_message = WebDriverWait(self.driver, 10).until(
+        #     EC.visibility_of_element_located(*success_message_selector)
+        # )
 
-        token_response = self.driver.find_element(By.CSS_SELECTOR, '.token-response').text
-        access_token = token_response.split('\n')[3].split('"')[3]
+        # token_response = self.driver.find_element(*token_response_selector).text
+        # access_token = token_response.split('\n')[3].split('"')[3]
 
-        print(access_token)
+        # print(access_token)
 
-        assert 'access_token' in token_response, f'"access_token" not in {token_response}'
-        assert len(access_token) > 0, f'len of {access_token} = 0'
+        # assert 'access_token' in token_response, f'"access_token" not in {token_response}'
+        # assert len(access_token) > 0, f'len of {access_token} = 0'
+        pass
