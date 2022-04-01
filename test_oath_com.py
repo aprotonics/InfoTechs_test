@@ -4,6 +4,7 @@ from pages.registration_page import RegistrationPage
 from pages.login_page import LoginPage
 from pages.auth_with_code_page import AuthWithCodePage
 from pages.auth_with_code_and_pkce_page import AuthWithCodeAndPkcePage
+from pages.auth_with_device_code_page import AuthWithDeviceCodePage
 
 
 BASE_URL = 'https://www.oauth.com'
@@ -20,7 +21,8 @@ def registration(driver):
     return registration_page
 
 
-class TestOathCom():  
+class TestOathCom(): 
+
     def test_go_to_reg_page(self, driver):        
         URL = f'{BASE_URL}/playground/index.html'
 
@@ -77,3 +79,14 @@ class TestOathCom():
         auth_with_code_and_pkce_page.verify_state_parameter()
         auth_with_code_and_pkce_page.exchange_auth_code()
         auth_with_code_and_pkce_page.check_access_token_appeared()
+    
+    def test_auth_with_device_code(self, registration):
+        URL = f'{BASE_URL}/playground/device-code.html'
+
+        registration_page = registration
+        auth_with_device_code_page = AuthWithDeviceCodePage(registration_page.driver, URL)
+        auth_with_device_code_page.open()
+        auth_with_device_code_page.request_device_code()
+        auth_with_device_code_page.tell_to_enter_code()
+        auth_with_device_code_page.poll_token_endpoint()
+        auth_with_device_code_page.check_access_token_appeared()

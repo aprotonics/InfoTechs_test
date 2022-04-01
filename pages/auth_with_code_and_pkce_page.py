@@ -57,4 +57,5 @@ class AuthWithCodeAndPkcePage(BasePage):
         print(self.access_token)
 
         assert 'access_token' in token_response, f'"access_token" not in {token_response}'
+        assert self.access_token in token_response, f'{self.access_token} not in {token_response}'
         assert len(self.access_token) > 0, f'len of {self.access_token} = 0'

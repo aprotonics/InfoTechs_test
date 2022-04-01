@@ -43,3 +43,13 @@ class AuthWithCodeAndPkceLocators():
     go_button_selector = (By.CSS_SELECTOR, '.card-footer a[data-step="4"]')
     success_message_selector = (By.XPATH, '//p[contains(@class, "success-message")][contains(text(),"Great")]')
     token_response_selector = (By.CSS_SELECTOR, '.token-response')
+
+class AuthWithDeviceCodePageLocators():
+    start_button_selector = (By.CSS_SELECTOR, '.card-footer a[data-step="1"]')
+    response_with_code_selector = (By.CSS_SELECTOR, '#step-2 .content pre')
+    continue_button_selector = (By.CSS_SELECTOR, '.card-footer a[data-step="2"]')
+    poll_button_selector = (By.CSS_SELECTOR, '.card-footer a[data-step="3"]')
+    div_poll_pending_selector = (By.CSS_SELECTOR, '#poll-pending')
+    div_poll_success_selector = (By.CSS_SELECTOR, '#poll-success')
+    poll_again_button_selector = (By.CSS_SELECTOR, '.card-footer a[data-step="3"]')
+    token_response_selector = (By.CSS_SELECTOR, '#poll-success pre')
